@@ -1,4 +1,4 @@
-module Blocks (groupBlocks, readBlocks, readInts, readInput) where
+module Day01.Blocks (groupBlocks, readBlocks, readInts, readInput) where
 
 groupBlocks :: [[String]] -> [String] -> [String] -> [[String]]
 groupBlocks blocks [] [] = blocks

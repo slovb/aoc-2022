@@ -1,4 +1,4 @@
-module Day05.First (main) where
+module Day05.Second (main) where
 
 import System.IO
     ( hClose, hGetContents, openFile, IOMode(ReadMode) )

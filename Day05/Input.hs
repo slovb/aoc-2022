@@ -2,18 +2,12 @@ module Day05.Input ( readBuckets, readInstructions ) where
 
 readBuckets :: [String] -> [[Char]]
 readBuckets input = do
-    let names:rows = reverse input
-    let last_name = last $ words names
-    let num = read last_name :: Int
-    [readBucket (i * 4 - 3) rows | i <- [1..num]]
+    let rows = init input
+    let n = length (head rows) `div` 4
+    [readBucket (i * 4 + 1) rows | i <- [0..n]]
 
 readBucket :: Int -> [String] -> [Char]
 readBucket i = filter (/= ' ') . map (!!i)
--- readBucket i [] = []
--- readBucket i (row:rows) | row!!i == ' ' = []
---                         | otherwise = c:readBucket i rows
---                         where
---                             c = row!!i
 
 readInstructions :: [String] -> [(Int, Int, Int)]
 readInstructions = map readInstruction

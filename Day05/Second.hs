@@ -1,4 +1,4 @@
-module Day05.Second (main) where
+module Day05.First (main) where
 
 import System.IO
     ( hClose, hGetContents, openFile, IOMode(ReadMode) )
@@ -6,25 +6,22 @@ import System.IO
 import Day05.Input ( readBuckets, readInstructions )
 
 change :: [[Char]] -> (Int, Int, Int) -> [[Char]]
--- change buckets (0, _, _) = buckets
 change buckets (amount, bucketA, bucketB) = do
-    let get i = buckets!!(i - 1)
-    let moved = reverse . take amount $ reverse $ get bucketA
-    let newA = reverse . drop amount $ reverse $ get bucketA
-    let newB = get bucketB ++ moved
-    let buck i | i == bucketA = newA
-               | i == bucketB = newB
-               | otherwise = get i
-    [buck i | i <- [1..length buckets]]
-    -- change bs (amount - 1, bucketA, bucketB)
-    
+    let get n = buckets!!(n - 1)
+    let moved = take amount $ get bucketA
+    let newA = drop amount $ get bucketA
+    let newB = moved ++ get bucketB
+    let bucket n | n == bucketA = newA
+                 | n == bucketB = newB
+                 | otherwise = get n
+    [bucket n | n <- [1..length buckets]]
 
 solve :: [[Char]] -> [(Int, Int, Int)] -> [[Char]]
 solve buckets [] = buckets
 solve buckets ins = foldl change buckets ins
 
 output :: [[Char]] -> String
-output = map last
+output = map head
 
 main :: IO ()
 main = do
@@ -37,10 +34,12 @@ main = do
     -- print bs
     -- print is
     let buckets = readBuckets bs
-    -- print buckets
+    print buckets
     let instructions = readInstructions is
     -- print instructions
+    -- let tmp = change buckets $ head instructions
+    -- print tmp
     let solution = solve buckets instructions
-    -- print solution
+    print solution
     print $ output solution
     hClose handler

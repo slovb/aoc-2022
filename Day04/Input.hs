@@ -1,4 +1,4 @@
-module Day04.Input ( Range, readInput ) where
+module Day04.Input ( readInput ) where
 
 import Day04.Range ( Range ) 
 

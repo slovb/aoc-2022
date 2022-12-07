@@ -1,4 +1,4 @@
-module Day07.Input ( readInput ) where
+module Day07.Input ( readInput, MyFiles(..), getSize ) where
 
 import Data.Char ( isDigit )
 
@@ -6,22 +6,30 @@ import Data.List ( isPrefixOf )
 
 data MyFiles = EmptyNode
            | MyFile { name :: String, size :: Int }
-           | MyFolder { name :: String, children :: [MyFiles] }
+           | MyFolder { name :: String, size :: Int, children :: [MyFiles] }
            deriving (Show) 
 
-readInput :: [String] -> [MyFiles]
+getSize :: MyFiles -> Int
+getSize (MyFile _ size) = size
+getSize (MyFolder _ size _) = size
+
+readInput :: [String] -> MyFiles
 readInput lines = files
-    where (files, _) = readLevel ([], lines)
+    where (files:_, _) = readLevel ([], lines)
 
 readLevel :: ([MyFiles], [String]) -> ([MyFiles], [String])
 readLevel (files, []) = (files, [])
 readLevel (files, line:rest)
     | isCdUp line = (files, rest)
     | isCd line = readLevel (files ++ [folder], nextRest)
-    | isFile line = readLevel (files ++ [readMyFile line], rest)
+    | isFile line = readLevel (files ++ [file], rest)
     | otherwise = readLevel (files, rest)
     where
-        (folder, nextRest) = readMyFolder (line:rest)
+        folderName = drop 5 line
+        (children, nextRest) = readLevel ([], rest)
+        size = sum $ map getSize children
+        folder = MyFolder folderName size children
+        file = readMyFile line
 
 isCdUp :: String -> Bool
 isCdUp "$ cd .." = True
@@ -31,12 +39,6 @@ isCd :: String -> Bool
 isCd line
     | "$ cd " `isPrefixOf` line = True
     | otherwise = False
-
-readMyFolder :: [String] -> (MyFiles, [String])
-readMyFolder (line:rest) = (MyFolder folderName children, nextRest)
-    where
-        folderName = drop 5 line
-        (children, nextRest) = readLevel ([], rest)
 
 isFile :: String -> Bool
 isFile line

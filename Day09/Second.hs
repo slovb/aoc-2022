@@ -7,7 +7,7 @@ import Data.Set ( fromList )
 
 import Day09.Input ( readInput )
 
-import Day09.Position ( Position, distance, followPositions )
+import Day09.Position ( Position, followPositions )
 
 import Day09.Move ( Move(..), journey )
 
@@ -15,7 +15,7 @@ follows :: Int -> Position -> [Position] -> [Position]
 follows 0 _ ps = ps
 follows c start ps = follows (c - 1) start newPs
     where
-        newPs = followPositions [start] start ps
+        newPs = followPositions [start] ps
 
 solve :: [Move] -> [Position]
 solve moves = tailPositions
@@ -27,7 +27,7 @@ solve moves = tailPositions
 main :: IO ()
 main = do
     let day = "Day09"
-    let test = True
+    let test = False
     let filename = day ++ if test then "/test2.txt" else "/input.txt"
     handler <- openFile filename ReadMode
     contents <- hGetContents handler

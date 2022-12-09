@@ -7,7 +7,7 @@ import Data.Set ( fromList )
 
 import Day09.Input ( readInput )
 
-import Day09.Position ( Position, distance, followPositions )
+import Day09.Position ( Position, followPositions )
 
 import Day09.Move ( Move(..), journey )
 
@@ -16,7 +16,7 @@ solve moves = tailPositions
     where
         start = (0, 0)
         headPositions = journey [start] moves
-        tailPositions = followPositions [start] start headPositions
+        tailPositions = followPositions [start] headPositions
 
 main :: IO ()
 main = do

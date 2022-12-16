@@ -29,6 +29,13 @@ def complete(valves):
                 is_complete = False
 
 
+def sorted_edges(valves, edges):
+    def key(edge):
+        name, cost = edge
+        return valves[name]['rate'] * (start_time - cost)
+    return dict(sorted(edges.items(), key=key, reverse=True))
+
+
 def clean(valves, starter_costs):
     baddies = [name for name, valve in valves.items() if valve['rate'] == 0]
     for baddie in baddies:
@@ -37,11 +44,13 @@ def clean(valves, starter_costs):
     for valve in valves.values():
         for baddie in baddies:
             del valve['edges'][baddie]
+        valve['edges'] = sorted_edges(valves, valve['edges'])
 
 
 def find_starter_costs(valves):
     costs = copy.deepcopy(valves[start_valve]['edges'])
     costs[start_valve] = 0
+    costs = sorted_edges(valves, costs)
     return costs
 
 
@@ -59,7 +68,7 @@ def score(valves, starter_costs, candidate):
 
 
 def search(valves, time, costs, current=[], taken=None):
-    yield current
+    # count = 0
     for name, cost in costs.items():
         if taken is not None and name in taken:
             continue
@@ -69,7 +78,11 @@ def search(valves, time, costs, current=[], taken=None):
             candidates = search(valves, time - cost - 1, valves[name]['edges'], current + [name], taken)
             if candidates is not None:
                 for candidate in candidates:
+                    # count += 1
                     yield candidate
+    # if count == 0:
+        # yield current  # too greedy for test, but works on live
+    yield current
 
 
 def solve(valves):
@@ -93,6 +106,8 @@ def solve(valves):
             if value > best_score:
                 best_score = value
                 print(f'{i} {j}: {best_score}')
+                if candidate_score < best_score // 2:
+                    break
     print(f'iterations: {i} {j}')
     return best_score
 

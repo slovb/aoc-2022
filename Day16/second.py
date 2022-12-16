@@ -76,26 +76,20 @@ def solve(valves):
     complete(valves)
     starter_costs = find_starter_costs(valves)
     clean(valves, starter_costs)
-    # example = ['DD', 'BB', 'JJ', 'HH', 'EE', 'CC']
     best_score = 0
-    i,j = 0,0
-    # for candidate in itertools.permutations(valves.keys()):
-    memory = {}
+    i, j = 0, 0
 
-    def memoized_score(candidate):
-        key = ''.join(candidate)
-        if key not in memory:
-            memory[key] = score(valves, starter_costs, candidate)
-        return memory[key]
+    def scr(candidate):
+        return score(valves, starter_costs, candidate)
     for candidate in search(valves, start_time, starter_costs):
         i += 1
-        candidate_score = memoized_score(candidate)
+        candidate_score = scr(candidate)
         if candidate_score < best_score // 2:
             continue
         banned = set(candidate)
         for elephant in search(valves, start_time, starter_costs, [], banned):
             j += 1
-            value = candidate_score + memoized_score(elephant)
+            value = candidate_score + scr(elephant)
             if value > best_score:
                 best_score = value
                 print(f'{i} {j}: {best_score}')

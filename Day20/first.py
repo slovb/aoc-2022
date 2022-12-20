@@ -1,3 +1,6 @@
+from typing import List
+
+
 class Item:
     def __init__(self, value):
         self.next = None
@@ -32,36 +35,60 @@ class Item:
 
         far_front.back = item
 
+    def forward(self, steps):
+        item = self
+        for _ in range(steps):
+            item = item.next
+        return item
+    
+    def backward(self, steps):
+        item = self
+        for _ in range(steps):
+            item = item.back
+        return item
 
-def solve(start, items):
+    def pluck(self):
+        self.back.next = self.next
+        self.next.back = self.back
+
+    def inject(self, item):
+        self.back = item
+        self.next = item.next
+        item.next.back = self
+
+        item.next = self
+
+
+def debug(start):
+    values = [start.value]
+    item = start.next
+    while item != start:
+        values.append(item.value)
+        item = item.next
+    return values
+
+
+def solve(items: List[Item]):
     zero = None
-    # num_items = len(items)
+    num_items = len(items)
     for item in items:
         if item.value == 0:
             zero = item
+
+        steps = abs(item.value) % (num_items - 1)
+        if steps == 0:
             continue
-        repeats = abs(item.value)
-        # repeats = item.value % num_items
-        # if item.value < 0:
-        #     repeats -= num_items
-        for _ in range(repeats):
-            if item.value > 0:
-                if item == start:
-                    start = item.next
-                elif item.next == start:
-                    start = item
-                item.move_forward()
-            else:
-                if item == start:
-                    start = item.next  # unsure
-                elif item.back == start:
-                    start = item
-                item.move_backward()
+
+        item.pluck()
+        if item.value > 0:
+            target = item.forward(steps)
+        else:
+            target = item.backward(steps + 1)
+        item.inject(target)
     values = []
     item = zero
     for _ in range(3):
-        for _ in range(1000):
-            item = item.next
+        item = item.forward(1000)
         values.append(item.value)
     return sum(values)
 
@@ -81,12 +108,12 @@ def read(path):
             prev = item
         prev.next = start
         start.back = prev
-        return start, items
+        return items
 
 
 def main(path, is_test):
-    start, items = read(path)
-    return solve(start, items)
+    items = read(path)
+    return solve(items)
 
 
 def display(output):
